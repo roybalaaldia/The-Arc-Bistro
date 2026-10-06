@@ -4,15 +4,16 @@ declare(strict_types=1);
 const SECTIONS = ['contact', 'social', 'hours', 'price', 'featured', 'menu', 'promos'];
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const DAY_NAMES = ['mon' => 'Monday', 'tue' => 'Tuesday', 'wed' => 'Wednesday', 'thu' => 'Thursday', 'fri' => 'Friday', 'sat' => 'Saturday', 'sun' => 'Sunday'];
-const IMG_RE = '#^(assets|uploads)/[A-Za-z0-9._%/-]+\.(jpe?g|png|webp)$#i';
+const IMG_RE = '#^(assets|uploads)/[A-Za-z0-9._%/-]+\.(jpe?g|png|webp)$#iD';
 
 function gen_id(): string { return 'x' . bin2hex(random_bytes(4)); }
-function keep_id($v): string { return (is_string($v) && preg_match('/^[a-z0-9]{3,12}$/', $v)) ? $v : gen_id(); }
+function keep_id($v): string { return (is_string($v) && preg_match('/^[a-z0-9]{3,12}$/D', $v)) ? $v : gen_id(); }
 
 function v_str($v, int $max, string $label, array &$errors, bool $required = false): string
 {
     $s = is_string($v) ? $v : '';
-    $s = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', str_replace("\r\n", "\n", $s)) ?? '';
+    if (!mb_check_encoding($s, 'UTF-8')) { $errors[] = "$label contains characters that are not allowed"; return ''; }
+    $s = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', str_replace(["\r\n", "\r"], "\n", $s)) ?? '';
     $s = trim($s);
     if ($required && $s === '') $errors[] = "$label is required";
     elseif (mb_strlen($s) > $max) $errors[] = "$label is too long (max $max characters)";
@@ -27,7 +28,7 @@ function v_image($v, string $label, array &$errors): string
 function v_date($v, string $label, array &$errors): string
 {
     if ($v === null || $v === '') return '';
-    if (!is_string($v) || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $v, $m) || !checkdate((int)$m[2], (int)$m[3], (int)$m[1])) {
+    if (!is_string($v) || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/D', $v, $m) || !checkdate((int)$m[2], (int)$m[3], (int)$m[1])) {
         $errors[] = "$label is not a valid date"; return '';
     }
     return $v;
@@ -39,6 +40,13 @@ function v_url($v, string $label, array &$errors): string
         $errors[] = "$label must be a full link starting with https://"; return '';
     }
     return $s;
+}
+
+function v_bool(array $r, string $key, string $label, array &$errors): bool
+{
+    if (!array_key_exists($key, $r)) return false;
+    if (!is_bool($r[$key])) { $errors[] = "$label must be true or false"; return false; }
+    return $r[$key];
 }
 
 function v_contact($d, array &$e): array
@@ -81,7 +89,7 @@ function v_hours($d, array &$e): array
         $st = $r['status'] ?? '';
         if (!in_array($st, ['open', 'closed', 'call'], true)) { $e[] = "$name: choose open, closed or call ahead"; continue; }
         if ($st !== 'open') { $out[] = ['day' => $day, 'status' => $st]; continue; }
-        $re = '/^([01]\d|2[0-3]):[0-5]\d$/';
+        $re = '/^([01]\d|2[0-3]):[0-5]\d$/D';
         $f = (string)($r['from'] ?? '');
         $t = (string)($r['to'] ?? '');
         if (!preg_match($re, $f) || !preg_match($re, $t)) { $e[] = "$name: enter opening and closing times"; continue; }
@@ -114,7 +122,7 @@ function v_featured($d, array &$e): array
             'description' => v_str($r['description'] ?? '', 140, "$n description", $e),
             'image' => v_image($r['image'] ?? '', $n, $e),
             'alt' => v_str($r['alt'] ?? '', 80, "$n photo description", $e),
-            'hidden' => ($r['hidden'] ?? false) === true,
+            'hidden' => v_bool($r, 'hidden', "$n hidden", $e),
         ];
     }
     return $out;
@@ -128,6 +136,7 @@ function v_menu($d, array &$e): array
     foreach (array_values($d) as $i => $c) {
         $cn = 'Category ' . ($i + 1);
         $c = is_array($c) ? $c : [];
+        if (isset($c['items']) && !is_array($c['items'])) $e[] = "$cn items must be a list";
         $items = is_array($c['items'] ?? null) ? $c['items'] : [];
         if (count($items) > 20) $e[] = "$cn can have at most 20 items";
         $cleanItems = [];
@@ -172,7 +181,7 @@ function v_promos($d, array &$e): array
             'alt' => v_str($r['alt'] ?? '', 80, "$n photo description", $e),
             'start' => $start,
             'end' => $end,
-            'active' => ($r['active'] ?? false) === true,
+            'active' => v_bool($r, 'active', "$n active", $e),
         ];
     }
     return $out;

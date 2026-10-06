@@ -33,7 +33,10 @@ function store_update(callable $mutate, ?int $baseRevision, string $who): int
     $dir = arc_cfg('data');
     if (!is_dir($dir)) mkdir($dir, 0775, true);
     $h = fopen($dir . '/content.lock', 'c');
-    flock($h, LOCK_EX);
+    if ($h === false || !flock($h, LOCK_EX)) {
+        if ($h !== false) fclose($h);
+        throw new RuntimeException('Could not lock the content file');
+    }
     try {
         $cur = store_read();
         if ($baseRevision !== null && (int)($cur['revision'] ?? 0) !== $baseRevision) {
@@ -60,5 +63,6 @@ function store_restore(string $name, string $who): int
     if (!is_array($d)) throw new InvalidArgumentException('That version was not found');
     $errs = validate_content($d);
     if ($errs) throw new InvalidArgumentException('That version is not valid: ' . implode('; ', $errs));
+    foreach (SECTIONS as $s) [$d[$s]] = validate_section($s, $d[$s] ?? []);
     return store_update(fn($cur) => $d, null, "$who (restored $name)");
 }

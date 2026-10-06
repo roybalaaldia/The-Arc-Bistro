@@ -98,3 +98,44 @@ t('store: invalid JSON in the content file raises instead of returning junk', fu
     file_put_contents($d . '/content.json', '{nope');
     throws(fn() => store_read(), RuntimeException::class);
 });
+t('trailing newline rejected: image, time, date; id not kept', function () {
+    [, $e] = validate_section('featured', [['name' => 'A', 'image' => "assets/a.jpg\n"]]);
+    ok(count($e) === 1, 'image');
+    $w = week(); $w[0]['from'] = "10:00\n";
+    [, $e] = validate_section('hours', $w);
+    ok(count($e) === 1, 'time');
+    [, $e] = validate_section('promos', [['title' => 'X', 'start' => "2026-10-10\n"]]);
+    ok(count($e) === 1, 'date');
+    [$c] = validate_section('featured', [['id' => "abc\n", 'name' => 'A']]);
+    ok($c[0]['id'] !== "abc\n" && preg_match('/^[a-z0-9]{3,12}$/D', $c[0]['id']) === 1, 'id');
+});
+t('menu: items that is not a list is an error', function () {
+    [, $e] = validate_section('menu', [['name' => 'P', 'items' => 'oops']]);
+    ok(count($e) === 1, json_encode($e));
+});
+t('bool fields: non-bool rejected, absent is false', function () {
+    [, $e] = validate_section('featured', [['name' => 'A', 'hidden' => 'true']]);
+    ok(count($e) === 1, 'hidden');
+    [, $e] = validate_section('promos', [['title' => 'X', 'active' => 1]]);
+    ok(count($e) === 1, 'active');
+    [$c, $e] = validate_section('promos', [['title' => 'X']]);
+    eq($e, []); eq($c[0]['active'], false);
+    [$c, $e] = validate_section('featured', [['name' => 'A']]);
+    eq($e, []); eq($c[0]['hidden'], false);
+});
+t('store: restore writes cleaned data', function () {
+    fresh_env();
+    store_update(function ($c) { $c['featured'][0]['name'] = '  Bisque  '; return $c; }, 0, 'a');
+    store_update(fn($c) => $c, 1, 'a');
+    $name = store_versions()[0]['name'];
+    store_restore($name, 'a');
+    eq(store_read()['featured'][0]['name'], 'Bisque');
+});
+t('invalid UTF-8 rejected without exception', function () {
+    [, $e] = validate_section('featured', [['name' => "\xff\xfe"]]);
+    ok(count($e) === 1, json_encode($e));
+});
+t('lone CR counts as a line break', function () {
+    [, $e] = validate_section('contact', ['address' => "a\rb\rc\rd\re"] + GOOD_CONTACT);
+    ok(count($e) === 1 && str_contains($e[0], 'at most 3 lines'), json_encode($e));
+});
