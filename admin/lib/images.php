@@ -58,3 +58,28 @@ function images_process(string $tmpPath): string
     }
     return 'uploads/' . $name;
 }
+
+/** Names (not paths) of uploaded photos that the current content or any saved version still uses. */
+function images_referenced(): array
+{
+    $files = [arc_cfg('content')];
+    foreach (glob(arc_cfg('data') . '/backups/content-*.json') ?: [] as $f) $files[] = $f;
+    $names = [];
+    foreach ($files as $f) {
+        if (is_file($f) && preg_match_all('#uploads/([0-9a-f]{16}\.(?:jpg|png|webp))#', (string)file_get_contents($f), $m)) {
+            foreach ($m[1] as $n) $names[$n] = true;
+        }
+    }
+    return $names;
+}
+
+function images_unused(): array
+{
+    $used = images_referenced();
+    $out = [];
+    foreach (glob(arc_cfg('uploads') . '/*') ?: [] as $f) {
+        $n = basename($f);
+        if (preg_match('/^[0-9a-f]{16}\.(jpg|png|webp)$/', $n) && !isset($used[$n])) $out[] = ['name' => $n, 'size' => (int)filesize($f)];
+    }
+    return $out;
+}

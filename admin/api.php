@@ -18,9 +18,21 @@ try {
     if (!$user) respond(401, ['ok' => false, 'error' => 'Please log in again.']);
 
     $routes = [
-        'content.get'  => ['GET',  'handle_content_get'],
-        'content.save' => ['POST', 'handle_content_save'],
-        'upload'       => ['POST', 'handle_upload'],
+        'content.get'         => ['GET',  'handle_content_get'],
+        'content.save'        => ['POST', 'handle_content_save'],
+        'upload'              => ['POST', 'handle_upload'],
+        'accounts.list'       => ['GET',  'handle_accounts_list'],
+        'accounts.create'     => ['POST', 'handle_accounts_create'],
+        'accounts.delete'     => ['POST', 'handle_accounts_delete'],
+        'accounts.send_reset' => ['POST', 'handle_accounts_send_reset'],
+        'account.password'    => ['POST', 'handle_account_password'],
+        'history.list'        => ['GET',  'handle_history_list'],
+        'history.restore'     => ['POST', 'handle_history_restore'],
+        'system.logs'         => ['GET',  'handle_system_logs'],
+        'system.smtp_get'     => ['GET',  'handle_system_smtp_get'],
+        'system.smtp_save'    => ['POST', 'handle_system_smtp_save'],
+        'system.images_unused' => ['GET',  'handle_system_images_unused'],
+        'system.images_delete' => ['POST', 'handle_system_images_delete'],
     ];
     $action = (string)($_GET['action'] ?? '');
     if (!isset($routes[$action])) respond(404, ['ok' => false, 'error' => 'Unknown action']);
