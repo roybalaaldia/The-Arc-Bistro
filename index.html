@@ -18,8 +18,8 @@
 <header class="hdr" id="hdr">
   <div class="hdr__top">
     <div class="wrap hdr__topin">
-      <div><a class="link-u" href="mailto:thearcbistro@gmail.com">thearcbistro@gmail.com</a><a class="link-u" href="tel:+639951091503">+63 995 109 1503</a></div>
-      <div><span>208 Osmeña Street, San Pablo City</span><a href="#visit" class="btn">Reserve</a></div>
+      <div><a class="link-u" href="mailto:thearcbistro@gmail.com" data-href="mailto:{contact.email}" data-bind="contact.email">thearcbistro@gmail.com</a><a class="link-u" href="tel:+639951091503" data-href="tel:{contact.phoneTel}" data-bind="contact.phone">+63 995 109 1503</a></div>
+      <div><span data-bind="contact.addressShort">208 Osmeña Street, San Pablo City</span><a href="#visit" class="btn">Reserve</a></div>
     </div>
   </div>
   <div class="wrap hdr__in">
@@ -44,9 +44,9 @@
   <a class="big" href="#space">The Space</a>
   <a class="big" href="#visit">Visit &amp; Reserve</a>
   <div class="meta">
-    <span>208 Osmeña Street, San Pablo City</span>
-    <a href="tel:+639951091503">+63 995 109 1503</a>
-    <a href="mailto:thearcbistro@gmail.com">thearcbistro@gmail.com</a>
+    <span data-bind="contact.addressShort">208 Osmeña Street, San Pablo City</span>
+    <a href="tel:+639951091503" data-href="tel:{contact.phoneTel}" data-bind="contact.phone">+63 995 109 1503</a>
+    <a href="mailto:thearcbistro@gmail.com" data-href="mailto:{contact.email}" data-bind="contact.email">thearcbistro@gmail.com</a>
   </div>
 </div>
 
@@ -70,12 +70,12 @@
       <img class="hours__mark" src="assets/logo-dark.png" alt="" aria-hidden="true" width="520" height="661">
       <h2>Opening hours</h2>
       <!-- VERIFY: confirm current hours with the business before launch -->
-      <div class="hours__list">
+      <div class="hours__list" data-hours="card">
         <div class="hours__row"><span>Tuesday – Sunday</span><span>10:00 AM – 9:00 PM</span></div>
         <div class="hours__row"><span>Monday</span><span>Call ahead</span></div>
       </div>
       <p class="hours__call">Call for reservations</p>
-      <a class="hours__phone" href="tel:+639951091503">+63 995 109 1503</a>
+      <a class="hours__phone" href="tel:+639951091503" data-href="tel:{contact.phoneTel}" data-bind="contact.phone">+63 995 109 1503</a>
     </div>
   </div>
 </section>
@@ -96,7 +96,7 @@
       <p class="lede" data-reveal>The ARC Bistro is a cafe and bistro in San Pablo City serving food, coffee and a wider selection of drinks in a refreshed, welcoming setting. It's a comfortable place for catch-ups, work sessions, coffee dates and long, unhurried meals.</p>
       <div class="facts" data-reveal>
         <div class="fact"><b>Breakfast to dinner</b><small>Brunch &amp; lunch too</small></div>
-        <div class="fact"><b>₱₱</b><small>Casual dining</small></div>
+        <div class="fact"><b data-bind="price.symbols">₱₱</b><small>Casual dining</small></div>
         <div class="fact"><b>Free Wi-Fi</b><small>Stay and work</small></div>
       </div>
       <a href="#visit" class="btn btn--ink" data-reveal>Plan your visit</a>
@@ -144,7 +144,7 @@
       <h2 data-split>Worth the trip to Osmeña Street.</h2>
       <p class="lede" data-reveal>From Filipino favourites to Italian pasta and pizza, our kitchen moves easily between home cooking and dishes from further afield.</p>
     </div>
-    <div class="menu__cols">
+    <div class="menu__cols" data-featured>
       <div class="mrow">
         <div class="mcell" data-reveal><span class="pillbtn">Italian · Pasta</span><h3>Fettuccine Alfredo</h3><p>A creamy, comforting plate and one of our most-ordered dishes.</p></div>
         <div class="mcell is-photo" data-reveal><figure class="media arch"><div class="media__inner"><img src="assets/Fettuccine.jpg" alt="Fettuccine Alfredo" loading="lazy"></div></figure></div>
@@ -162,6 +162,7 @@
         <div class="mcell" data-reveal><span class="pillbtn">Coffee bar</span><h3>Coffee</h3><p>Your favourite cup, plus new drinks to discover on the wider menu.</p></div>
       </div>
     </div>
+    <div class="fullmenu" id="fullMenu" hidden></div>
     <ul class="cuisines" data-reveal>
       <li><b>Filipino</b><small>Home favourites</small></li>
       <li><b>Italian &amp; Pizza</b><small>Pasta, pizza</small></li>
@@ -171,8 +172,16 @@
     </ul>
     <div class="menu__foot" data-reveal>
       <div class="meals" aria-label="Meals served"><span>Breakfast</span><span>Brunch</span><span>Lunch</span><span>Dinner</span></div>
-      <a class="btn btn--ink" href="https://www.facebook.com/profile.php?id=61555963439558" target="_blank" rel="noopener">Latest menu on Facebook</a>
+      <a class="btn btn--ink" href="https://www.facebook.com/profile.php?id=61555963439558" data-social="Facebook" target="_blank" rel="noopener">Latest menu on Facebook</a>
     </div>
+  </div>
+</section>
+
+<!-- ============ PROMOS (rendered from content.json; removed when none are live) ============ -->
+<section class="promos" id="promos" hidden>
+  <div class="wrap">
+    <h2>Right now at The ARC</h2>
+    <div class="promos__grid" id="promoGrid"></div>
   </div>
 </section>
 
@@ -218,7 +227,7 @@
         <li><svg viewBox="0 0 26 26"><path d="M7 21c0-4 2.5-6 6-6s6 2 6 6"/><circle cx="6" cy="11" r="2"/><circle cx="10.5" cy="7" r="2"/><circle cx="15.5" cy="7" r="2"/><circle cx="20" cy="11" r="2"/></svg>Dog-friendly</li>
         <li><svg viewBox="0 0 26 26"><rect x="4" y="6" width="18" height="16" rx="1"/><path d="M4 11h18M9 3v5M17 3v5"/></svg>Reservations recommended</li>
       </ul>
-      <div class="price"><b>₱₱</b><span>Inexpensive to moderate</span></div>
+      <div class="price"><b data-bind="price.symbols">₱₱</b><span data-bind="price.label">Inexpensive to moderate</span></div>
     </aside>
   </div>
 </section>
@@ -234,11 +243,11 @@
         <h2>Save yourself a seat.</h2>
         <p class="lede">Reservations are recommended, especially on weekends and for groups. Call, send us a message on Facebook or email us, and we'll have a table ready.</p>
         <div class="ways">
-          <a class="way" href="tel:+639951091503"><small>Call</small><b>+63 995 109 1503</b></a>
-          <a class="way" href="https://www.facebook.com/profile.php?id=61555963439558" target="_blank" rel="noopener"><small>Message</small><b>Facebook</b></a>
-          <a class="way" href="mailto:thearcbistro@gmail.com"><small>Email</small><b>thearcbistro@gmail.com</b></a>
+          <a class="way" href="tel:+639951091503" data-href="tel:{contact.phoneTel}"><small>Call</small><b data-bind="contact.phone">+63 995 109 1503</b></a>
+          <a class="way" href="https://www.facebook.com/profile.php?id=61555963439558" data-social="Facebook" target="_blank" rel="noopener"><small>Message</small><b>Facebook</b></a>
+          <a class="way" href="mailto:thearcbistro@gmail.com" data-href="mailto:{contact.email}"><small>Email</small><b data-bind="contact.email">thearcbistro@gmail.com</b></a>
         </div>
-        <a href="tel:+639951091503" class="btn btn--ink">Call to reserve</a>
+        <a href="tel:+639951091503" data-href="tel:{contact.phoneTel}" class="btn btn--ink">Call to reserve</a>
       </div>
       <figure class="media arch trio__r" data-parallax>
         <div class="media__inner"><img src="assets/drinks.jpg" alt="Coffee and drinks" loading="lazy"></div>
@@ -247,14 +256,13 @@
     <div class="addr" data-reveal>
       <div>
         <h3>Find us</h3>
-        <p>208 Osmeña Street, City Subdivision<br>San Pablo City, Laguna, Philippines</p>
+        <p data-lines="contact.address">208 Osmeña Street, City Subdivision<br>San Pablo City, Laguna, Philippines</p>
         <a class="link-u" href="https://www.google.com/maps/search/?api=1&amp;query=The+ARC+Bistro+Osme%C3%B1a+Street+San+Pablo+City+Laguna" target="_blank" rel="noopener">Get directions →</a>
       </div>
       <div>
         <h3>Hours</h3>
         <!-- VERIFY: confirm current hours with the business before launch -->
-        <p>Tuesday – Sunday<br>10:00 AM – 9:00 PM</p>
-        <p style="margin-top:6px">Monday: please call ahead</p>
+        <div data-hours="block"><p>Tuesday – Sunday<br>10:00 AM – 9:00 PM</p><p>Monday<br>Call ahead</p></div>
       </div>
     </div>
   </div>
@@ -270,7 +278,7 @@
   <div class="cta__half">
     <h2 data-split>Stay connected to the table.</h2>
     <p data-reveal>Follow us on Facebook for the latest menu, new dishes and news from the ARC.</p>
-    <a href="https://www.facebook.com/profile.php?id=61555963439558" target="_blank" rel="noopener" class="btn" data-reveal>Visit our Facebook</a>
+    <a href="https://www.facebook.com/profile.php?id=61555963439558" data-social="Facebook" target="_blank" rel="noopener" class="btn" data-reveal>Visit our Facebook</a>
   </div>
 </section>
 </main>
@@ -281,21 +289,21 @@
     <div class="ftr__grid">
       <div>
         <h3>Location</h3>
-        <p>208 Osmeña Street<br>City Subdivision<br>San Pablo City, Laguna<br>Philippines</p>
+        <p data-lines="contact.address">208 Osmeña Street<br>City Subdivision<br>San Pablo City, Laguna<br>Philippines</p>
       </div>
       <div>
         <h3>Opening time</h3>
-        <ul>
+        <ul data-hours="footer">
           <li>Tue – Sun · 10 AM – 9 PM</li>
           <li>Monday · call ahead</li>
         </ul>
       </div>
       <div>
         <h3>Contact</h3>
-        <ul>
-          <li><a class="big link-u" href="tel:+639951091503">+63 995 109 1503</a></li>
-          <li><a class="link-u" href="mailto:thearcbistro@gmail.com">thearcbistro@gmail.com</a></li>
-          <li style="margin-top:10px"><a class="social link-u" href="https://www.facebook.com/profile.php?id=61555963439558" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.4H7.7V14h2.7v8z"/></svg>Facebook</a></li>
+        <ul data-social-list>
+          <li><a class="big link-u" href="tel:+639951091503" data-href="tel:{contact.phoneTel}" data-bind="contact.phone">+63 995 109 1503</a></li>
+          <li><a class="link-u" href="mailto:thearcbistro@gmail.com" data-href="mailto:{contact.email}" data-bind="contact.email">thearcbistro@gmail.com</a></li>
+          <li style="margin-top:10px"><a class="social link-u" href="https://www.facebook.com/profile.php?id=61555963439558" data-social="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.4H7.7V14h2.7v8z"/></svg>Facebook</a></li>
         </ul>
       </div>
       <div>
@@ -321,6 +329,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="content-logic.js"></script>
+<script src="render.js"></script>
 <script src="main.js"></script>
 
 </body>

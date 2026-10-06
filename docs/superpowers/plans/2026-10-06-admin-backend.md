@@ -82,7 +82,7 @@ public_html/                         (= project root today)
     tests/check.php                  CREATE: plain-PHP self-check script
 ```
 
-Run commands: from the project root, PHP tests `php admin/tests/check.php`; JS tests `node --test tests/`; local site `php -S localhost:8080` (serves public page and admin together).
+Run commands: from the project root, PHP tests `php admin/tests/check.php`; JS tests `node --test`; local site `php -S localhost:8080` (serves public page and admin together).
 
 ---
 
@@ -217,7 +217,7 @@ test('frameFor cycles arch, pill, leaf', () => {
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: FAIL, `Cannot find module '../content-logic.js'`
 
 - [ ] **Step 3: Implement**
@@ -322,7 +322,7 @@ Create `content-logic.js`:
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: all tests PASS
 
 - [ ] **Step 5: Checkpoint**
@@ -692,7 +692,7 @@ Expected: promos section and price list are gone, page matches the original.
 
 - [ ] **Step 8: Run all tests**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: PASS
 
 - [ ] **Step 9: Checkpoint**

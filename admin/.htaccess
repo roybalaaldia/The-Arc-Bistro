@@ -1,0 +1,9 @@
+Options -Indexes
+RewriteEngine On
+RewriteOptions Inherit
+RewriteRule ^(lib|tests|data)(/|$) - [F,L]
+
+<IfModule mod_headers.c>
+  Header always set Cache-Control "no-store"
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'none'"
+</IfModule>
