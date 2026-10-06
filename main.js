@@ -2,6 +2,8 @@
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = (s,c=document)=>c.querySelector(s), $$=(s,c=document)=>[...c.querySelectorAll(s)];
 
+  function start(){
+
   /* ---------- smooth scroll ---------- */
   let lenis = null;
   if(!reduce && window.Lenis){
@@ -88,4 +90,11 @@
   gsap.to('.hero__content',{yPercent:-18,opacity:.2,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
 
   window.addEventListener('load',()=>ScrollTrigger.refresh());
+  }
+
+  fetch('content.json',{cache:'no-cache'})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(c=>{ if(window.renderContent) window.renderContent(c); })
+    .catch(()=>{})
+    .then(start);
 })();

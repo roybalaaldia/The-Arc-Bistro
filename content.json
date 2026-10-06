@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-06T00:00:00+08:00",
+  "contact": {
+    "phone": "+63 995 109 1503",
+    "email": "thearcbistro@gmail.com",
+    "address": "208 Osmeña Street, City Subdivision\nSan Pablo City, Laguna, Philippines",
+    "addressShort": "208 Osmeña Street, San Pablo City"
+  },
+  "social": [
+    { "label": "Facebook", "url": "https://www.facebook.com/profile.php?id=61555963439558" }
+  ],
+  "hours": [
+    { "day": "mon", "status": "call" },
+    { "day": "tue", "status": "open", "from": "10:00", "to": "21:00" },
+    { "day": "wed", "status": "open", "from": "10:00", "to": "21:00" },
+    { "day": "thu", "status": "open", "from": "10:00", "to": "21:00" },
+    { "day": "fri", "status": "open", "from": "10:00", "to": "21:00" },
+    { "day": "sat", "status": "open", "from": "10:00", "to": "21:00" },
+    { "day": "sun", "status": "open", "from": "10:00", "to": "21:00" }
+  ],
+  "price": { "level": 2, "label": "Inexpensive to moderate" },
+  "featured": [
+    { "id": "d1", "name": "Fettuccine Alfredo", "tag": "Italian · Pasta", "description": "A creamy, comforting plate and one of our most-ordered dishes.", "image": "assets/Fettuccine.jpg", "alt": "Fettuccine Alfredo", "hidden": false },
+    { "id": "d2", "name": "Shrimp Bisque", "tag": "Soup", "description": "A rich, velvety shellfish soup, warm and full of flavour, lovely with a slice of bread.", "image": "assets/Shrimp%20Bisque.jpg", "alt": "Shrimp Bisque", "hidden": false },
+    { "id": "d3", "name": "Pizza", "tag": "Italian · Pizza", "description": "Made for sharing across the table with friends and family.", "image": "assets/pizza.jpg", "alt": "Pizza", "hidden": false },
+    { "id": "d4", "name": "Coffee", "tag": "Coffee bar", "description": "Your favourite cup, plus new drinks to discover on the wider menu.", "image": "assets/coffee.png", "alt": "Coffee", "hidden": false }
+  ],
+  "menu": [],
+  "promos": []
+}
