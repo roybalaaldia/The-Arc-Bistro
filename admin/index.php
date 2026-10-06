@@ -3,6 +3,14 @@ declare(strict_types=1);
 require __DIR__ . '/lib/bootstrap.php';
 require __DIR__ . '/lib/page.php';
 
+// "/admin" without the trailing slash would make every relative link and redirect resolve one level too high
+$path = (string)parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+if (PHP_SAPI !== 'cli' && $path !== '' && !str_ends_with($path, '/') && !str_ends_with($path, '.php')) {
+    $q = (string)($_SERVER['QUERY_STRING'] ?? '');
+    header('Location: ' . $path . '/' . ($q !== '' ? '?' . $q : ''), true, 301);
+    exit;
+}
+
 auth_session_start();
 if (!is_file(arc_cfg('data') . '/setup.lock')) { header('Location: setup.php'); exit; }
 if (auth_current()) { header('Location: app.php'); exit; }
