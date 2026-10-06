@@ -54,6 +54,7 @@ Data flow: admin form -> `api/save.php` (checks session, role, CSRF token, valid
 ```json
 {
   "version": 1,
+  "revision": 0,
   "updatedAt": "2026-10-06T10:00:00+08:00",
   "contact": {
     "phone": "+63 995 109 1503",
@@ -81,6 +82,8 @@ Data flow: admin form -> `api/save.php` (checks session, role, CSRF token, valid
   ]
 }
 ```
+
+`revision` is an integer that increases by one on every save; the admin sends the revision it loaded and a mismatch is refused (409).
 
 Limits (keep layout safe): dish name 40, tag 30, dish description 140, category name 30, menu item name 50, item description 100, promo title 50, promo details 200. Max 8 featured dishes, 8 categories, 20 items per category, 6 promos. Item `status`: `available` | `hidden` | `soldout`.
 
@@ -113,7 +116,7 @@ Sidebar: **Menu**, **Promos**, **Hours & Contact**, **Accounts** (Owner, Develop
 - CSRF token required on every state-changing request.
 - Login lockout: 5 failed attempts locks that username and IP for 10 minutes.
 - Roles enforced server-side per endpoint: Staff may call only menu and promo endpoints; Owner adds hours, contact, accounts, history; Developer adds system endpoints and is hidden from Owner views.
-- First setup: one-time `setup` page creates the first Developer and Owner accounts, then disables itself (writes a lock file).
+- First setup: one-time `setup` page creates the first Developer and Owner accounts, then disables itself (writes a lock file). The first-time setup page requires a `setup.key` file placed on the server by the developer; it is deleted when setup completes.
 - Forgot password: asks for email, always replies with a generic message, sends a single-use link valid 30 minutes (only a hash stored), rate-limited per email and IP.
 - Mail via Hostinger SMTP mailbox, configured in System.
 - HTTPS enforced; admin pages sent with `no-store` cache headers.
@@ -146,3 +149,5 @@ Draft/preview before publish, scheduled publishing beyond promo dates, multi-lan
 2. Currency formatting is ₱ with thousands separators; confirm no other currency is needed.
 3. Hostinger plan must allow PHP `mail()` or SMTP and GD image support (expected on all plans; developer to confirm).
 4. Developer to confirm where `data/` can live outside the web root, otherwise rely on `.htaccess` deny.
+5. Copy elsewhere on the page that names days or places (for example 'Tuesday to Sunday' in the closing call-to-action band and 'Worth the trip to Osmeña Street') is static text and is not editable from the admin.
+6. Existing sessions are not invalidated when a password is changed or reset (candidate follow-up: record a password-changed timestamp on the account and compare it with the session's start time).
