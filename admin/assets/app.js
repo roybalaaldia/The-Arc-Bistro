@@ -97,7 +97,13 @@
     const prev = h('div', { class: 'photo__preview' });
     const status = h('span', { class: 'field__hint' });
     const input = h('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', class: 'visually-hidden' });
-    const draw = () => prev.replaceChildren(obj[key] ? h('img', { src: '../' + obj[key], alt: '' }) : h('span', { class: 'photo__empty' }, 'No photo yet'));
+    const lab = h('label', { class: 'btn' }, '', input);
+    const rm = btn('Remove photo', () => { obj[key] = ''; ARC.dirty = true; draw(); });
+    const draw = () => {
+      prev.replaceChildren(obj[key] ? h('img', { src: '../' + obj[key], alt: '' }) : h('span', { class: 'photo__empty' }, 'No photo yet'));
+      lab.firstChild.textContent = obj[key] ? 'Change photo' : 'Choose photo';
+      rm.disabled = !obj[key];
+    };
     input.addEventListener('change', async () => {
       const f = input.files[0];
       if (!f) return;
@@ -105,14 +111,14 @@
       status.textContent = 'Uploading…';
       const fd = new FormData();
       fd.append('photo', f);
-      const r = await api('upload', { method: 'POST', form: fd });
+      let r;
+      try { r = await api('upload', { method: 'POST', form: fd }); } catch (e) { r = { ok: false, error: 'Upload failed. Check your connection and try again.' }; }
       if (r.ok) { obj[key] = r.path; ARC.dirty = true; status.textContent = ''; draw(); } else status.textContent = r.error;
       input.value = '';
     });
     draw();
     return h('div', { class: 'photo' }, prev, h('div', { class: 'photo__side' },
-      h('label', { class: 'btn' }, obj[key] ? 'Change photo' : 'Choose photo', input),
-      obj[key] ? btn('Remove photo', () => { obj[key] = ''; ARC.dirty = true; draw(); }) : null,
+      lab, rm,
       status,
       altKey ? field('Describe the photo (for screen readers)', textInput(obj, altKey, { max: 80 })) : null,
       h('span', { class: 'field__hint' }, 'JPG, PNG or WebP, up to 5 MB. Portrait photos work best.')
@@ -120,7 +126,9 @@
   }
 
   async function saveSection(section, data) {
-    const r = await api('content.save', { method: 'POST', json: { section, data, baseRevision: ARC.state.revision } });
+    let r;
+    try { r = await api('content.save', { method: 'POST', json: { section, data, baseRevision: ARC.state.revision } }); }
+    catch (e) { r = { ok: false, status: 0, error: 'Could not reach the server. Check your connection and try again.' }; }
     if (r.ok) {
       ARC.state.revision = r.revision;
       ARC.state.content[section] = r.data;

@@ -5,6 +5,8 @@ h1,h2{font-family:Georgia,"Times New Roman",serif;font-weight:400;margin:0 0 .4e
 h2{font-size:1.35rem}
 a{color:var(--forest)}
 .muted{color:var(--muted)}
+[hidden]{display:none!important}
+label.btn:focus-within{outline:3px solid var(--brass);outline-offset:2px}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;padding:.6em 1.1em;border:1px solid var(--forest);background:transparent;color:var(--forest);border-radius:6px;font:inherit;cursor:pointer;min-height:44px;text-decoration:none}
 .btn:hover{background:var(--forest);color:var(--paper)}
@@ -36,7 +38,7 @@ a{color:var(--forest)}
 .field__hint,.counter{color:var(--muted);font-size:.82rem}
 .input{position:relative}
 .input .counter{position:absolute;right:8px;bottom:6px;background:#fffd;padding:0 4px}
-input[type=text],input[type=email],input[type=password],input[type=date],input[type=time],input:not([type]),textarea,select{width:100%;padding:.6em .75em;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff;color:var(--ink);min-height:44px}
+input[type=text],input[type=email],input[type=password],input[type=date],input[type=time],input[type=number],input[type=tel],input[type=url],input:not([type]),textarea,select{width:100%;padding:.6em .75em;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff;color:var(--ink);min-height:44px}
 textarea{resize:vertical}
 .toggle{display:flex;align-items:center;gap:10px;margin:6px 0 12px;min-height:44px}
 .toggle input{width:22px;height:22px}
