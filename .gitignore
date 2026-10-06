@@ -1,0 +1,10 @@
+.superpowers/
+.tools/
+tools/
+node_modules/
+# runtime data written by the admin
+admin/data/*
+!admin/data/.htaccess
+uploads/*
+!uploads/.htaccess
+!uploads/.gitkeep

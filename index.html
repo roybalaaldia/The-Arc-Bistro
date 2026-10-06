@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The ARC Bistro</title>
+<meta name="description" content="The ARC Bistro is a cafe and bistro in San Pablo City, Laguna, serving Filipino, Italian, fusion and international dishes, pizza, coffee and a wider selection of drinks in a refreshed, welcoming space.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baskervville:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ============ HEADER ============ -->
+<header class="hdr" id="hdr">
+  <div class="hdr__top">
+    <div class="wrap hdr__topin">
+      <div><a class="link-u" href="mailto:thearcbistro@gmail.com">thearcbistro@gmail.com</a><a class="link-u" href="tel:+639951091503">+63 995 109 1503</a></div>
+      <div><span>208 Osmeña Street, San Pablo City</span><a href="#visit" class="btn">Reserve</a></div>
+    </div>
+  </div>
+  <div class="wrap hdr__in">
+    <nav class="nav" aria-label="Main">
+      <a href="#about" class="link-u">About</a>
+      <a href="#menu" class="link-u">Menu</a>
+    </nav>
+    <a href="#top" class="brand" aria-label="The ARC Bistro, back to top">
+      <img src="assets/logo-light.png" alt="The ARC Bistro" width="520" height="661">
+    </a>
+    <nav class="nav" aria-label="Secondary">
+      <a href="#space" class="link-u">The Space</a>
+      <a href="#visit" class="link-u">Visit</a>
+    </nav>
+    <a href="#visit" class="btn hdr__cta">Reserve</a>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer"><span></span><span></span></button>
+  </div>
+</header>
+<div class="drawer" id="drawer" aria-hidden="true">
+  <a class="big" href="#about">About</a>
+  <a class="big" href="#menu">Menu</a>
+  <a class="big" href="#space">The Space</a>
+  <a class="big" href="#visit">Visit &amp; Reserve</a>
+  <div class="meta">
+    <span>208 Osmeña Street, San Pablo City</span>
+    <a href="tel:+639951091503">+63 995 109 1503</a>
+    <a href="mailto:thearcbistro@gmail.com">thearcbistro@gmail.com</a>
+  </div>
+</div>
+
+<main id="main">
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero__bg media" data-parallax="hero">
+    <div class="media__inner"><img src="assets/hero.png" alt="Inside The ARC Bistro" fetchpriority="high"></div>
+  </div>
+  <div class="wrap hero__content">
+    <h1 data-split data-load>Everything you loved, now with more to adore.</h1>
+    <p class="lede" data-load>Come for the food and stay for the soul-soothing coffee and more. Our doors are officially open, and we can't wait to welcome you back to a brighter, better ARC.</p>
+    <div class="hero__ctas" data-load>
+      <a href="#visit" class="btn btn--solid">Reserve a table</a>
+      <a href="#menu" class="btn">See what's cooking</a>
+    </div>
+  </div>
+  <!-- hours arch, hanging off the hero like a doorway -->
+  <div class="hours">
+    <div class="hours__card" data-rise>
+      <img class="hours__mark" src="assets/logo-dark.png" alt="" aria-hidden="true" width="520" height="661">
+      <h2>Opening hours</h2>
+      <!-- VERIFY: confirm current hours with the business before launch -->
+      <div class="hours__list">
+        <div class="hours__row"><span>Tuesday – Sunday</span><span>10:00 AM – 9:00 PM</span></div>
+        <div class="hours__row"><span>Monday</span><span>Call ahead</span></div>
+      </div>
+      <p class="hours__call">Call for reservations</p>
+      <a class="hours__phone" href="tel:+639951091503">+63 995 109 1503</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-label="Cuisine: Filipino, Fusion, International, Italian, Pizza, Coffee">
+  <div class="marquee__track" aria-hidden="true">
+    <span>Filipino</span><span>Fusion</span><span>International</span><span>Italian</span><span>Pizza</span><span>Coffee</span>
+    <span>Filipino</span><span>Fusion</span><span>International</span><span>Italian</span><span>Pizza</span><span>Coffee</span>
+  </div>
+</div>
+
+<!-- ============ ABOUT ============ -->
+<section class="about" id="about">
+  <div class="wrap about__grid">
+    <div class="about__text">
+      <h2 data-split>Come for the food, stay for the soul-soothing coffee.</h2>
+      <p class="lede" data-reveal>The ARC Bistro is a cafe and bistro in San Pablo City serving food, coffee and a wider selection of drinks in a refreshed, welcoming setting. It's a comfortable place for catch-ups, work sessions, coffee dates and long, unhurried meals.</p>
+      <div class="facts" data-reveal>
+        <div class="fact"><b>Breakfast to dinner</b><small>Brunch &amp; lunch too</small></div>
+        <div class="fact"><b>₱₱</b><small>Casual dining</small></div>
+        <div class="fact"><b>Free Wi-Fi</b><small>Stay and work</small></div>
+      </div>
+      <a href="#visit" class="btn btn--ink" data-reveal>Plan your visit</a>
+    </div>
+    <figure class="media arch-inv about__img" data-parallax>
+      <div class="media__inner"><img src="assets/Coffee%20bar.jpg" alt="The coffee bar at The ARC Bistro" loading="lazy"></div>
+      <span class="ring" aria-hidden="true"></span>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ STORY: panel over the new room ============ -->
+<section class="story" id="space">
+  <div class="story__bg media" data-parallax>
+    <div class="media__inner"><img src="assets/new%20interior.jpg" alt="The refreshed dining room" loading="lazy"></div>
+  </div>
+  <div class="wrap">
+    <div class="story__panel" data-reveal>
+      <h2>Our doors are officially open, and we can't wait to welcome you back.</h2>
+      <p>A beautiful new setting for catch-ups and work sessions. We've refreshed the room, grown the menu and widened the drinks list, so there's more reason to stay a little longer.</p>
+      <a href="#visit" class="btn btn--ink">Book the private room</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REOPENING + FILMSTRIP ============ -->
+<section class="reopen" id="new">
+  <div class="wrap reopen__grid">
+    <h2 data-split>A brighter, better ARC. Everything you loved is still here.</h2>
+    <p data-reveal>New food choices that pair perfectly with your drinks, and more ways to enjoy your favourite coffee and discover new sips.</p>
+    <p data-reveal>Come for the catch-ups, the coffee dates and the long, unhurried meals. The room is ready for them.</p>
+  </div>
+  <div class="film" aria-hidden="true">
+    <div class="film__track">
+      <img src="assets/newdish.jpg" alt=""><img src="assets/drinks.jpg" alt=""><img src="assets/Fettuccine.jpg" alt=""><img src="assets/pizza.jpg" alt=""><img src="assets/Shrimp%20Bisque.jpg" alt=""><img src="assets/filipino%20dish.jpg" alt=""><img src="assets/pasta.jpg" alt=""><img src="assets/coffe-bread.jpg" alt="">
+      <img src="assets/newdish.jpg" alt=""><img src="assets/drinks.jpg" alt=""><img src="assets/Fettuccine.jpg" alt=""><img src="assets/pizza.jpg" alt=""><img src="assets/Shrimp%20Bisque.jpg" alt=""><img src="assets/filipino%20dish.jpg" alt=""><img src="assets/pasta.jpg" alt=""><img src="assets/coffe-bread.jpg" alt="">
+    </div>
+  </div>
+</section>
+
+<!-- ============ MENU ============ -->
+<section class="menu" id="menu">
+  <div class="wrap">
+    <div class="menu__head">
+      <h2 data-split>Worth the trip to Osmeña Street.</h2>
+      <p class="lede" data-reveal>From Filipino favourites to Italian pasta and pizza, our kitchen moves easily between home cooking and dishes from further afield.</p>
+    </div>
+    <div class="menu__cols">
+      <div class="mrow">
+        <div class="mcell" data-reveal><span class="pillbtn">Italian · Pasta</span><h3>Fettuccine Alfredo</h3><p>A creamy, comforting plate and one of our most-ordered dishes.</p></div>
+        <div class="mcell is-photo" data-reveal><figure class="media arch"><div class="media__inner"><img src="assets/Fettuccine.jpg" alt="Fettuccine Alfredo" loading="lazy"></div></figure></div>
+      </div>
+      <div class="mrow">
+        <div class="mcell is-photo" data-reveal><figure class="media pill" style="aspect-ratio:4/5"><div class="media__inner"><img src="assets/Shrimp%20Bisque.jpg" alt="Shrimp Bisque" loading="lazy"></div></figure></div>
+        <div class="mcell" data-reveal><span class="pillbtn">Soup</span><h3>Shrimp Bisque</h3><p>A rich, velvety shellfish soup, warm and full of flavour, lovely with a slice of bread.</p></div>
+      </div>
+      <div class="mrow">
+        <div class="mcell" data-reveal><span class="pillbtn">Italian · Pizza</span><h3>Pizza</h3><p>Made for sharing across the table with friends and family.</p></div>
+        <div class="mcell is-photo" data-reveal><figure class="media leaf"><div class="media__inner"><img src="assets/pizza.jpg" alt="Pizza" loading="lazy"></div></figure></div>
+      </div>
+      <div class="mrow">
+        <div class="mcell is-photo" data-reveal><figure class="media arch"><div class="media__inner"><img src="assets/coffee.png" alt="Coffee" loading="lazy"></div></figure></div>
+        <div class="mcell" data-reveal><span class="pillbtn">Coffee bar</span><h3>Coffee</h3><p>Your favourite cup, plus new drinks to discover on the wider menu.</p></div>
+      </div>
+    </div>
+    <ul class="cuisines" data-reveal>
+      <li><b>Filipino</b><small>Home favourites</small></li>
+      <li><b>Italian &amp; Pizza</b><small>Pasta, pizza</small></li>
+      <li><b>Fusion</b><small>Something new</small></li>
+      <li><b>International</b><small>Dishes from afar</small></li>
+      <li><b>Coffee &amp; Drinks</b><small>Wider selection</small></li>
+    </ul>
+    <div class="menu__foot" data-reveal>
+      <div class="meals" aria-label="Meals served"><span>Breakfast</span><span>Brunch</span><span>Lunch</span><span>Dinner</span></div>
+      <a class="btn btn--ink" href="https://www.facebook.com/profile.php?id=61555963439558" target="_blank" rel="noopener">Latest menu on Facebook</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURE BAND ============ -->
+<section class="feat">
+  <div class="wrap feat__grid">
+    <article class="feat__item" data-reveal>
+      <svg viewBox="0 0 46 56" aria-hidden="true"><path d="M5 54V23a18 18 0 0 1 36 0v31"/><path d="M13 54V25a10 10 0 0 1 20 0v29"/><path d="M2 54h42"/></svg>
+      <h3>Refined ambiance</h3>
+      <p>A beautiful new setting for catch-ups and work sessions.</p>
+    </article>
+    <article class="feat__item" data-reveal>
+      <svg viewBox="0 0 46 56" aria-hidden="true"><path d="M5 54V23a18 18 0 0 1 36 0v31"/><path d="M13 30h20M13 38h20M13 46h20"/><path d="M2 54h42"/></svg>
+      <h3>Expanded menu</h3>
+      <p>New food choices that pair perfectly with your drinks.</p>
+    </article>
+    <article class="feat__item" data-reveal>
+      <svg viewBox="0 0 46 56" aria-hidden="true"><path d="M5 54V23a18 18 0 0 1 36 0v31"/><path d="M15 20h16l-8 14z"/><path d="M23 34v14M17 48h12"/><path d="M2 54h42"/></svg>
+      <h3>Wider drink selection</h3>
+      <p>More ways to enjoy your favourite coffee and discover new sips.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ OCCASIONS + AMENITIES ============ -->
+<section class="occ" id="occasions">
+  <div class="wrap occ__grid">
+    <div>
+      <h2 data-split>However you like to spend an afternoon.</h2>
+      <ul class="occ__list" id="occList">
+        <li>Catch-ups</li><li>Work sessions</li><li>Coffee dates</li><li>Date nights</li><li>Business dining</li><li>Special occasions</li><li>Quiet conversations</li><li>Quick bites</li><li>Meeting for a drink</li>
+      </ul>
+    </div>
+    <aside class="amen" data-reveal>
+      <h3>Good to know</h3>
+      <ul>
+        <li><svg viewBox="0 0 26 26"><path d="M5 9h16l-1.5 13h-13z"/><path d="M9 9V7a4 4 0 0 1 8 0v2"/></svg>Takeout</li>
+        <li><svg viewBox="0 0 26 26"><path d="M3 10a14 14 0 0 1 20 0"/><path d="M6.5 13.5a9 9 0 0 1 13 0"/><path d="M10 17a4 4 0 0 1 6 0"/><circle cx="13" cy="20.5" r=".8"/></svg>Free Wi-Fi</li>
+        <li><svg viewBox="0 0 26 26"><path d="M7 4h12l-6 9z"/><path d="M13 13v8"/><path d="M9 22h8"/></svg>Lounge &amp; bar</li>
+        <li><svg viewBox="0 0 26 26"><path d="M6 23V7a7 7 0 0 1 14 0v16"/><path d="M3 23h20"/><circle cx="16" cy="15" r=".8"/></svg>Private room</li>
+        <li><svg viewBox="0 0 26 26"><rect x="4" y="4" width="18" height="18" rx="2"/><path d="M10 18V8h4a3 3 0 0 1 0 6h-4"/></svg>Parking</li>
+        <li><svg viewBox="0 0 26 26"><circle cx="13" cy="7" r="3"/><path d="M8 23v-6l-2-4h14l-2 4v6"/></svg>Child-friendly</li>
+        <li><svg viewBox="0 0 26 26"><path d="M7 21c0-4 2.5-6 6-6s6 2 6 6"/><circle cx="6" cy="11" r="2"/><circle cx="10.5" cy="7" r="2"/><circle cx="15.5" cy="7" r="2"/><circle cx="20" cy="11" r="2"/></svg>Dog-friendly</li>
+        <li><svg viewBox="0 0 26 26"><rect x="4" y="6" width="18" height="16" rx="1"/><path d="M4 11h18M9 3v5M17 3v5"/></svg>Reservations recommended</li>
+      </ul>
+      <div class="price"><b>₱₱</b><span>Inexpensive to moderate</span></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ VISIT & RESERVE ============ -->
+<section class="visit" id="visit">
+  <div class="wrap">
+    <div class="trio">
+      <figure class="media arch trio__l" data-parallax>
+        <div class="media__inner"><img src="assets/coffe-bread.jpg" alt="Coffee and bread" loading="lazy"></div>
+      </figure>
+      <div class="trio__c" data-reveal>
+        <h2>Save yourself a seat.</h2>
+        <p class="lede">Reservations are recommended, especially on weekends and for groups. Call, send us a message on Facebook or email us, and we'll have a table ready.</p>
+        <div class="ways">
+          <a class="way" href="tel:+639951091503"><small>Call</small><b>+63 995 109 1503</b></a>
+          <a class="way" href="https://www.facebook.com/profile.php?id=61555963439558" target="_blank" rel="noopener"><small>Message</small><b>Facebook</b></a>
+          <a class="way" href="mailto:thearcbistro@gmail.com"><small>Email</small><b>thearcbistro@gmail.com</b></a>
+        </div>
+        <a href="tel:+639951091503" class="btn btn--ink">Call to reserve</a>
+      </div>
+      <figure class="media arch trio__r" data-parallax>
+        <div class="media__inner"><img src="assets/drinks.jpg" alt="Coffee and drinks" loading="lazy"></div>
+      </figure>
+    </div>
+    <div class="addr" data-reveal>
+      <div>
+        <h3>Find us</h3>
+        <p>208 Osmeña Street, City Subdivision<br>San Pablo City, Laguna, Philippines</p>
+        <a class="link-u" href="https://www.google.com/maps/search/?api=1&amp;query=The+ARC+Bistro+Osme%C3%B1a+Street+San+Pablo+City+Laguna" target="_blank" rel="noopener">Get directions →</a>
+      </div>
+      <div>
+        <h3>Hours</h3>
+        <!-- VERIFY: confirm current hours with the business before launch -->
+        <p>Tuesday – Sunday<br>10:00 AM – 9:00 PM</p>
+        <p style="margin-top:6px">Monday: please call ahead</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPLIT CTA ============ -->
+<section class="cta">
+  <div class="cta__half">
+    <h2 data-split>See you at The ARC.</h2>
+    <p data-reveal>Food, coffee and good company in San Pablo City, Tuesday to Sunday.</p>
+    <a href="#visit" class="btn btn--solid" data-reveal>Reserve a table</a>
+  </div>
+  <div class="cta__half">
+    <h2 data-split>Stay connected to the table.</h2>
+    <p data-reveal>Follow us on Facebook for the latest menu, new dishes and news from the ARC.</p>
+    <a href="https://www.facebook.com/profile.php?id=61555963439558" target="_blank" rel="noopener" class="btn" data-reveal>Visit our Facebook</a>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__grid">
+      <div>
+        <h3>Location</h3>
+        <p>208 Osmeña Street<br>City Subdivision<br>San Pablo City, Laguna<br>Philippines</p>
+      </div>
+      <div>
+        <h3>Opening time</h3>
+        <ul>
+          <li>Tue – Sun · 10 AM – 9 PM</li>
+          <li>Monday · call ahead</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a class="big link-u" href="tel:+639951091503">+63 995 109 1503</a></li>
+          <li><a class="link-u" href="mailto:thearcbistro@gmail.com">thearcbistro@gmail.com</a></li>
+          <li style="margin-top:10px"><a class="social link-u" href="https://www.facebook.com/profile.php?id=61555963439558" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.4H7.7V14h2.7v8z"/></svg>Facebook</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Menu</h3>
+        <ul>
+          <li><a class="link-u" href="#about">About</a></li>
+          <li><a class="link-u" href="#menu">Menu</a></li>
+          <li><a class="link-u" href="#space">The Space</a></li>
+          <li><a class="link-u" href="#visit">Visit &amp; Reserve</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ftr__mark" aria-hidden="true">The ARC Bistro</div>
+  </div>
+  <div class="ftr__base">
+    <div class="wrap" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;width:100%">
+      <span>© 2026 The ARC Bistro. All rights reserved.</span>
+      <a href="#top" class="link-u">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
