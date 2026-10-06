@@ -10,15 +10,20 @@ function store_read(): array
     return $d;
 }
 
-function store_write(array $content, string $who): int
+function store_write(array $content, string $who, ?int $unreadableBase = null): int
 {
     $file = arc_cfg('content');
     $bdir = arc_cfg('data') . '/backups';
     if (!is_dir($bdir)) mkdir($bdir, 0775, true);
-    $prev = is_file($file) ? json_read($file, []) : [];
-    if (is_file($file)) copy($file, $bdir . '/content-' . date('Ymd-His') . '-' . sprintf('%04x', (int)($prev['revision'] ?? 0) % 65536) . '.json');
+    if ($unreadableBase !== null) {
+        $rev = $unreadableBase + 1; // unreadable file: no backup of it, and stay above every existing backup
+    } else {
+        $prev = is_file($file) ? json_read($file, []) : [];
+        if (is_file($file)) copy($file, $bdir . '/content-' . date('Ymd-His') . '-' . sprintf('%04x', (int)($prev['revision'] ?? 0) % 65536) . '.json');
+        $rev = (int)($prev['revision'] ?? 0) + 1;
+    }
     $content['version'] = 1;
-    $content['revision'] = (int)($prev['revision'] ?? 0) + 1;
+    $content['revision'] = $rev;
     $content['updatedAt'] = date('c');
     json_write_atomic($file, $content);
     $old = glob($bdir . '/content-*.json') ?: [];
@@ -30,30 +35,31 @@ function store_write(array $content, string $who): int
 
 function store_update(callable $mutate, ?int $baseRevision, string $who): int
 {
-    $dir = arc_cfg('data');
-    if (!is_dir($dir)) mkdir($dir, 0775, true);
-    $h = fopen($dir . '/content.lock', 'c');
-    if ($h === false || !flock($h, LOCK_EX)) {
-        if ($h !== false) fclose($h);
-        throw new RuntimeException('Could not lock the content file');
-    }
-    try {
-        $cur = store_read();
-        if ($baseRevision !== null && (int)($cur['revision'] ?? 0) !== $baseRevision) {
-            throw new ConflictException('Someone else changed this while you were editing. Reload the page and try again.');
+    return with_file_lock('content', function () use ($mutate, $baseRevision, $who) {
+        try {
+            $cur = store_read();
+            $unreadable = null;
+        } catch (RuntimeException $e) {
+            if ($baseRevision !== null) throw $e; // a normal save must not proceed on unreadable content
+            $unreadable = 0;
+            foreach (glob(arc_cfg('data') . '/backups/content-*.json') ?: [] as $f) $unreadable = max($unreadable, (int)(json_read($f, [])['revision'] ?? 0));
+            $cur = ['revision' => $unreadable];
         }
-        return store_write($mutate($cur), $who);
-    } finally {
-        flock($h, LOCK_UN);
-        fclose($h);
-    }
+        if ($baseRevision !== null && (int)($cur['revision'] ?? 0) !== $baseRevision) {
+            throw new ConflictException('Someone else saved changes while you were editing. Copy anything you typed, reload the page, and apply it again.');
+        }
+        return store_write($mutate($cur), $who, $unreadable);
+    });
 }
 
 function store_versions(): array
 {
     $files = glob(arc_cfg('data') . '/backups/content-*.json') ?: [];
     rsort($files);
-    return array_map(fn($f) => ['name' => basename($f), 'time' => date('c', (int)filemtime($f)), 'size' => (int)filesize($f)], $files);
+    return array_map(function ($f) {
+        $d = json_read($f, []);
+        return ['name' => basename($f), 'time' => (string)($d['updatedAt'] ?? date('c', (int)filemtime($f))), 'revision' => (int)($d['revision'] ?? 0), 'size' => (int)filesize($f)];
+    }, $files);
 }
 
 function store_restore(string $name, string $who): int

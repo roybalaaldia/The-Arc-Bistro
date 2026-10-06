@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+date_default_timezone_set('Asia/Manila');
+
 function arc_cfg(string $key): string
 {
     static $defaults = null;

@@ -19,7 +19,7 @@
 1. In hPanel, confirm PHP 8.1 or newer, and in "PHP Configuration" that `gd`, `mbstring`, `fileinfo`, `openssl`, `exif` are enabled. Set `display_errors` to Off.
 2. Upload the project to `public_html` (skip the items listed above).
 3. Make sure `admin/data/` and `uploads/` are writable by PHP (permissions 755 or 775, owned by the account).
-4. Create `admin/data/setup.key` on the server (any secret word) BEFORE the first visit to `/admin/setup.php`. Open `https://yourdomain/admin/`, type the secret word into the setup form and create the developer and owner accounts. The key file deletes itself: after setup, verify it is gone.
+4. Create `admin/data/setup.key` on the server (a long random string, at least 24 characters; generate one, do not reuse a password) BEFORE the first visit to `/admin/setup.php`. Open `https://yourdomain/admin/`, type the setup key into the setup form and create the developer and owner accounts. The key file deletes itself: after setup, verify it is gone.
 5. Log in as developer, open System, fill in Email settings (Hostinger mailbox) and the website address, press Save.
 6. Click "Forgot your password?" on the login page with the owner's email: the email arrives and the link works.
 
@@ -51,4 +51,6 @@ Also upload a photo through the admin, copy its address (`https://yourdomain/upl
 - With default content, the public page looks exactly like before; with the promo list empty and no menu categories, no extra section appears.
 - Blocking `content.json` (rename it for a minute) leaves the public page readable.
 - Admin is usable at phone width (sidebar becomes a row, buttons are tappable, photos upload from the phone camera).
-- Two people saving at once: the second sees "Someone else changed this".
+- Two people saving at once: the second sees "Someone else saved changes while you were editing".
+- Break the page's data: rename content.json for a minute, reload the public page: the built-in text still shows; restore the file.
+- Edit a dish name to <script>alert(1)</script> & Co. in the admin: the public page shows that text literally and no alert runs; restore the name.

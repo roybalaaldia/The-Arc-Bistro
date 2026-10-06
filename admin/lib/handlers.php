@@ -6,7 +6,11 @@ function api_err(string $msg, int $status, array $extra = []): array { return [$
 
 function handle_content_get(array $user, array $in): array
 {
-    $c = store_read();
+    try {
+        $c = store_read();
+    } catch (RuntimeException $e) {
+        return api_err('The website content file could not be read. Ask the developer, or restore a previous version from the History tab.', 500, ['contentOk' => false]);
+    }
     if ($user['role'] === 'staff') {
         $c = array_intersect_key($c, array_flip(['revision', 'updatedAt', 'featured', 'menu', 'promos']));
     }
@@ -32,6 +36,9 @@ function handle_content_save(array $user, array $in): array
         );
     } catch (ConflictException $e) {
         return api_err($e->getMessage(), 409);
+    } catch (RuntimeException $e) {
+        log_line('error', 'content save failed: ' . $e->getMessage());
+        return api_err('The website content could not be saved. Ask the developer, or restore a previous version from the History tab.', 500);
     }
     return api_ok(['revision' => $rev, 'data' => $clean]);
 }
@@ -98,6 +105,7 @@ function handle_accounts_send_reset(array $user, array $in): array
     if (!can($user['role'], 'accounts')) return deny();
     $t = visible_target($user, (string)($in['id'] ?? ''));
     if (!$t) return api_err('Account not found.', 404);
+    if ($user['role'] === 'owner' && $t['role'] !== 'staff') return api_err('Owners can only send reset links to staff accounts.', 403);
     reset_request($t['email'], 'admin:' . $user['id']);
     return api_ok(['message' => 'If the email is set up correctly, a reset link is on its way to ' . $t['email'] . '.']);
 }
@@ -106,11 +114,10 @@ function handle_account_password(array $user, array $in, ?int $now = null): arra
 {
     $now ??= time();
     $key = attempts_key('pw', $user['id']);
-    $wait = lock_remaining($key, $now);
-    if ($wait > 0) return api_err('Too many attempts. Try again in ' . max(1, (int)ceil($wait / 60)) . ' minute(s).', 429);
+    $wait = attempt_reserve($key, $now);
+    if ($wait > 0) return api_err(lock_message($wait), 429);
     $cur = user_by('id', $user['id']);
     if (!$cur || !password_verify((string)($in['current'] ?? ''), $cur['hash'])) {
-        attempt_fail($key, $now);
         log_line('activity', "{$user['username']} failed a password change check");
         return api_err('Your current password is not correct.', 422);
     }
@@ -118,7 +125,7 @@ function handle_account_password(array $user, array $in, ?int $now = null): arra
     $new = (string)($in['new'] ?? '');
     if (strlen($new) < PASSWORD_MIN) return api_err('The new password must be at least ' . PASSWORD_MIN . ' characters.', 422);
     $users = users_all();
-    foreach ($users as &$u) { if ($u['id'] === $user['id']) $u['hash'] = password_hash($new, PASSWORD_DEFAULT); }
+    foreach ($users as &$u) { if ($u['id'] === $user['id']) $u['hash'] = pw_hash($new); }
     unset($u);
     users_save($users);
     log_line('activity', "{$user['username']} changed their password");
@@ -128,7 +135,14 @@ function handle_account_password(array $user, array $in, ?int $now = null): arra
 function handle_history_list(array $user, array $in): array
 {
     if (!can($user['role'], 'history')) return deny();
-    return api_ok(['versions' => store_versions(), 'revision' => (int)(store_read()['revision'] ?? 0)]);
+    try {
+        $rev = (int)(store_read()['revision'] ?? 0);
+        $ok = true;
+    } catch (RuntimeException $e) {
+        $rev = 0;
+        $ok = false;
+    }
+    return api_ok(['versions' => store_versions(), 'revision' => $rev, 'contentOk' => $ok]);
 }
 
 function handle_history_restore(array $user, array $in): array

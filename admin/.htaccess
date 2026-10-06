@@ -1,7 +1,7 @@
 Options -Indexes
 RewriteEngine On
 RewriteOptions Inherit
-RewriteRule ^(lib|tests)(/|$) - [F,L]
+RewriteRule ^(lib|tests|data)(/|$) - [F,L]
 
 <IfModule mod_headers.c>
   Header always set Cache-Control "no-store"

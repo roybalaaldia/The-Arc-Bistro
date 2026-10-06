@@ -18,6 +18,24 @@ function json_write_atomic(string $file, $data): void
     if (!rename($tmp, $file)) { @unlink($tmp); throw new RuntimeException('Could not replace file'); }
 }
 
+/** Runs $fn while holding an exclusive lock on data/<name>.lock. */
+function with_file_lock(string $name, callable $fn)
+{
+    $dir = arc_cfg('data');
+    if (!is_dir($dir)) mkdir($dir, 0775, true);
+    $h = fopen($dir . '/' . $name . '.lock', 'c');
+    if ($h === false || !flock($h, LOCK_EX)) {
+        if ($h !== false) fclose($h);
+        throw new RuntimeException('Could not lock ' . $name);
+    }
+    try {
+        return $fn();
+    } finally {
+        flock($h, LOCK_UN);
+        fclose($h);
+    }
+}
+
 function log_line(string $kind, string $msg): void
 {
     $dir = arc_cfg('data') . '/log';

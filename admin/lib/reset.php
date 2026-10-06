@@ -72,7 +72,7 @@ function reset_consume(string $token, string $newPassword, ?int $now = null): ar
     $users = users_all();
     $found = false;
     foreach ($users as &$u) {
-        if ($u['id'] === $x['uid']) { $u['hash'] = password_hash($newPassword, PASSWORD_DEFAULT); $found = true; }
+        if ($u['id'] === $x['uid']) { $u['hash'] = pw_hash($newPassword); $found = true; }
     }
     unset($u);
     if (!$found) return $gone;

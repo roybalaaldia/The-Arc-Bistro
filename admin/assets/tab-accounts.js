@@ -26,7 +26,7 @@
       const errs = errorBox();
       const rows = r.users.map(u => h('tr', {},
         h('td', {}, u.username, u.self ? ' (you)' : ''), h('td', {}, u.email), h('td', {}, u.role),
-        h('td', {}, u.self ? null : h('div', { class: 'item__actions' },
+        h('td', {}, u.self || (role === 'owner' && u.role !== 'staff') ? null : h('div', { class: 'item__actions' },
           btn('Send reset link', async e => { e.target.disabled = true; const x = await api('accounts.send_reset', { method: 'POST', json: { id: u.id } }); toast(x.ok ? x.message : x.error, x.ok ? 'ok' : 'error'); e.target.disabled = false; }),
           btn('Delete', async () => {
             if (!confirm('Delete the account "' + u.username + '"?')) return;

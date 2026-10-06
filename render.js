@@ -5,7 +5,6 @@
   const SAFE_IMG = /^(assets|uploads)\/[A-Za-z0-9._%\/-]+\.(jpe?g|png|webp)$/i;
   const safeImg = s => typeof s === 'string' && SAFE_IMG.test(s) && s.indexOf('..') === -1;
   const safeUrl = s => typeof s === 'string' && /^https:\/\//i.test(s);
-  const FB_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.4H7.7V14h2.7v8z"/></svg>';
 
   function el(tag, cls, text) {
     const e = document.createElement(tag);
@@ -37,15 +36,15 @@
 
   function bindSocial(social) {
     const byLabel = {};
-    social.forEach(s => { if (safeUrl(s.url)) byLabel[s.label] = s.url; });
+    social.forEach(s => { if (safeUrl(s.url)) byLabel[String(s.label).toLowerCase()] = s.url; });
     $$('[data-social]').forEach(a => {
-      const url = byLabel[a.getAttribute('data-social')];
+      const url = byLabel[a.getAttribute('data-social').toLowerCase()];
       const box = a.closest('li') || a;
       if (url) { a.setAttribute('href', url); box.hidden = false; } else { box.hidden = true; }
     });
     $$('[data-social-list]').forEach(ul => {
       $$('li.dyn', ul).forEach(li => li.remove());
-      social.filter(s => s.label !== 'Facebook' && safeUrl(s.url)).forEach(s => {
+      social.filter(s => String(s.label).toLowerCase() !== 'facebook' && safeUrl(s.url)).forEach(s => {
         const li = el('li', 'dyn');
         const a = el('a', 'social link-u', s.label);
         a.href = s.url; a.target = '_blank'; a.rel = 'noopener';
@@ -173,7 +172,7 @@
     safely(() => bindText(view));
     safely(() => Array.isArray(c.social) && bindSocial(c.social));
     safely(() => Array.isArray(c.hours) && c.hours.length && bindHours(c.hours));
-    safely(() => Array.isArray(c.featured) && c.featured.length && renderFeatured(c.featured));
+    safely(() => Array.isArray(c.featured) && renderFeatured(c.featured));
     safely(() => Array.isArray(c.menu) && renderFullMenu(c.menu));
     safely(() => Array.isArray(c.promos) && renderPromos(c.promos));
   };

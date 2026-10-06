@@ -7,6 +7,10 @@ const SESSION_IDLE = 1800;
 const MAX_ATTEMPTS = 5;
 const LOCK_SECONDS = 600;
 const PASSWORD_MIN = 10;
+const PASSWORD_COST = 10; // explicit: must equal DUMMY_HASH's cost on every PHP version
+const ATTEMPT_STALE = 3600;
+
+function pw_hash(string $password): string { return password_hash($password, PASSWORD_BCRYPT, ['cost' => PASSWORD_COST]); }
 
 function users_all(): array { return json_read(arc_cfg('data') . '/users.json', []); }
 function users_save(array $u): void { json_write_atomic(arc_cfg('data') . '/users.json', array_values($u)); }
@@ -32,7 +36,7 @@ function user_create(string $username, string $email, string $password, string $
     if (user_by('email', $email)) throw new InvalidArgumentException('That email is already used by another account');
     $u = [
         'id' => 'u' . bin2hex(random_bytes(4)), 'username' => $username, 'email' => $email, 'role' => $role,
-        'hash' => password_hash($password, PASSWORD_DEFAULT), 'createdAt' => date('c'),
+        'hash' => pw_hash($password), 'createdAt' => date('c'),
     ];
     $all = users_all();
     $all[] = $u;
@@ -45,44 +49,59 @@ const DUMMY_HASH = '$2y$10$VmqVq25y1uQtLDyIOOCUkOf.ghh3PFyG6OAkcYKZtqB/o3hQCRnvO
 
 function attempts_key(string $ip, string $username): string { return hash('sha256', $ip . '|' . strtolower(trim($username))); }
 
-function lock_remaining(string $key, int $now): int
+/** Drops rows whose lock expired or whose last attempt is over an hour old, so attempts.json cannot grow forever. */
+function attempts_prune(array $a, int $now): array
 {
-    $a = json_read(arc_cfg('data') . '/attempts.json', []);
-    return max(0, (int)($a[$key]['until'] ?? 0) - $now);
+    return array_filter($a, function ($r) use ($now) {
+        $until = (int)($r['until'] ?? 0);
+        return $until > 0 ? $until > $now : (int)($r['at'] ?? 0) > $now - ATTEMPT_STALE;
+    });
 }
 
-function attempt_fail(string $key, int $now): void
+/**
+ * Reserve-before-verify: under a file lock, report an active lock (seconds left) or record this attempt
+ * as a failure right away (locking at MAX_ATTEMPTS). Returns 0 when the caller may go on to verify.
+ * attempt_clear() undoes the reservation after a correct password.
+ */
+function attempt_reserve(string $key, int $now): int
 {
-    $f = arc_cfg('data') . '/attempts.json';
-    $a = json_read($f, []);
-    $row = $a[$key] ?? ['count' => 0, 'until' => 0];
-    if ((int)$row['until'] > 0 && (int)$row['until'] <= $now) $row = ['count' => 0, 'until' => 0];
-    $row['count']++;
-    if ($row['count'] >= MAX_ATTEMPTS) { $row['until'] = $now + LOCK_SECONDS; $row['count'] = 0; }
-    $a[$key] = $row;
-    json_write_atomic($f, $a);
+    return with_file_lock('attempts', function () use ($key, $now) {
+        $f = arc_cfg('data') . '/attempts.json';
+        $a = attempts_prune(json_read($f, []), $now);
+        $wait = max(0, (int)($a[$key]['until'] ?? 0) - $now);
+        if ($wait === 0) {
+            $row = $a[$key] ?? ['count' => 0, 'until' => 0];
+            $row['count']++;
+            if ($row['count'] >= MAX_ATTEMPTS) { $row['until'] = $now + LOCK_SECONDS; $row['count'] = 0; }
+            $row['at'] = $now;
+            $a[$key] = $row;
+        }
+        json_write_atomic($f, $a);
+        return $wait;
+    });
 }
 
 function attempt_clear(string $key): void
 {
-    $f = arc_cfg('data') . '/attempts.json';
-    $a = json_read($f, []);
-    unset($a[$key]);
-    json_write_atomic($f, $a);
+    with_file_lock('attempts', function () use ($key) {
+        $f = arc_cfg('data') . '/attempts.json';
+        $a = json_read($f, []);
+        unset($a[$key]);
+        json_write_atomic($f, $a);
+    });
 }
+
+function lock_message(int $wait): string { return 'Too many attempts. Try again in ' . max(1, (int)ceil($wait / 60)) . ' minute(s).'; }
 
 function auth_login(string $username, string $password, string $ip, ?int $now = null): array
 {
     $now ??= time();
     $key = attempts_key($ip, $username);
-    $wait = lock_remaining($key, $now);
-    if ($wait > 0) {
-        return ['ok' => false, 'error' => 'Too many attempts. Try again in ' . max(1, (int)ceil($wait / 60)) . ' minute(s).', 'user' => null];
-    }
+    $wait = attempt_reserve($key, $now);
+    if ($wait > 0) return ['ok' => false, 'error' => lock_message($wait), 'user' => null];
     $u = user_by('username', strtolower(trim($username)));
     $good = password_verify($password, $u['hash'] ?? DUMMY_HASH) && $u !== null;
     if (!$good) {
-        attempt_fail($key, $now);
         log_line('activity', 'failed login ' . substr(hash('sha256', strtolower($username)), 0, 8));
         return ['ok' => false, 'error' => 'Wrong username or password.', 'user' => null];
     }
@@ -93,6 +112,7 @@ function auth_login(string $username, string $password, string $ip, ?int $now = 
 function auth_session_start(): void
 {
     if (session_status() === PHP_SESSION_ACTIVE) return;
+    ini_set('session.gc_maxlifetime', (string)(SESSION_IDLE * 4));
     session_name('arcadmin');
     session_set_cookie_params(['lifetime' => 0, 'path' => '/', 'secure' => !empty($_SERVER['HTTPS']), 'httponly' => true, 'samesite' => 'Lax']);
     session_start();

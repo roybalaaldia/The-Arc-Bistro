@@ -104,8 +104,8 @@ Sidebar: **Menu**, **Promos**, **Hours & Contact**, **Accounts** (Owner, Develop
 - **Menu:** featured dish cards (photo, name, label, description, hide toggle, up/down arrows, delete, Add dish). Full menu: categories containing items (name, description, price, status), with add, delete and reorder.
 - **Promos:** form per promo (title, details, optional image, start and end dates, Active switch).
 - **Hours & Contact:** 7-day table (Open / Closed / Call ahead + time pickers), price level dropdown and label, phone, email, address, social links list.
-- **Accounts:** list, add, remove, reset-link, change role (Owner manages Staff accounts and their own password; Owner cannot see or edit Developer accounts; only a Developer can add or remove another Owner).
-- **System (Developer):** activity log, error log, SMTP settings, upload limits, restore any version.
+- **Accounts:** list, add, remove, reset-link (Owner manages Staff accounts and their own password; Owner cannot see or edit Developer accounts; only a Developer can add or remove another Owner; an Owner can send reset links to Staff only). To change someone's role, delete the account and add it again.
+- **System (Developer):** activity log, error log, SMTP settings, restore any version.
 - **History:** Owner and Developer can list saved versions and restore one. Restoring itself creates a new version.
 - **UX safeguards:** live character counters, inline validation, unsaved-changes warning, clear success and error messages.
 

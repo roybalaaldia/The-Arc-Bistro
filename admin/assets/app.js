@@ -168,13 +168,14 @@
     document.querySelectorAll('#nav button').forEach(b => b.setAttribute('aria-current', String(b.dataset.key === key)));
     const main = document.getElementById('main');
     main.replaceChildren();
-    ARC.tabs[key].render(main);
+    const done = ARC.tabs[key].render(main);
     window.scrollTo(0, 0);
+    return done;
   }
 
   async function reload() {
     ARC.dirty = false;
-    if (await loadContent()) show(ARC.current);
+    if (await loadContent()) { const back = ARC.afterRecovery; ARC.afterRecovery = null; show(back || ARC.current); }
   }
 
   async function start() {
@@ -182,7 +183,16 @@
     const nav = document.getElementById('nav');
     tabs.forEach(([key, label]) => nav.append(h('button', { type: 'button', 'data-key': key, onclick: () => show(key) }, label)));
     window.addEventListener('beforeunload', e => { if (ARC.dirty) { e.preventDefault(); e.returnValue = ''; } });
-    if (await loadContent()) show(tabs[0][0]);
+    if (await loadContent()) { show(tabs[0][0]); return; }
+    // Content could not be read: keep History reachable so a version can be restored (spec section 9).
+    const hasHistory = tabs.some(t => t[0] === 'history');
+    ARC.current = hasHistory ? 'history' : tabs[0][0];
+    ARC.afterRecovery = tabs[0][0]; // once a restore makes the content readable, land on the first normal tab
+    const warn = card('The website content could not be read', hasHistory
+      ? 'Restore a previous version below to fix it.'
+      : 'Please ask the owner or the developer to restore a previous version.');
+    if (hasHistory) { await show('history'); document.getElementById('main').prepend(warn); }
+    else document.getElementById('main').append(warn);
   }
 
   Object.assign(ARC, { h, api, toast, btn, card, field, textInput, selectInput, toggleField, errorBox, move, photoField, saveSection, loadContent, reload, start });
