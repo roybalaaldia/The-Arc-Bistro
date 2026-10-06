@@ -1,5 +1,14 @@
 (function () {
-  const ARC = (window.ARC = { tabs: {}, state: { content: null, revision: 0 }, dirty: false, current: '' });
+  const ARC = (window.ARC = { tabs: {}, state: { content: null, revision: 0 }, current: '' });
+  // Unsaved changes are tracked per card. `ARC.dirty = true` marks the card the user last interacted with
+  // (every edit, add, delete, move and toggle happens inside a user event); `ARC.dirty = false` clears all.
+  const dirtyCards = new Set();
+  let activeCard = null;
+  ['input', 'change', 'click'].forEach(t => document.addEventListener(t, e => { activeCard = (e.target.closest && e.target.closest('.card')) || activeCard; }, true));
+  Object.defineProperty(ARC, 'dirty', {
+    get: () => [...dirtyCards].some(c => c.isConnected),
+    set: v => { if (!v) dirtyCards.clear(); else if (activeCard) dirtyCards.add(activeCard); }
+  });
   const body = document.body;
 
   function h(tag, props, ...kids) {
@@ -109,11 +118,12 @@
       if (!f) return;
       if (f.size > 5 * 1024 * 1024) { status.textContent = 'That photo is larger than 5 MB.'; input.value = ''; return; }
       status.textContent = 'Uploading…';
+      const owner = input.closest('.card');
       const fd = new FormData();
       fd.append('photo', f);
       let r;
       try { r = await api('upload', { method: 'POST', form: fd }); } catch (e) { r = { ok: false, error: 'Upload failed. Check your connection and try again.' }; }
-      if (r.ok) { obj[key] = r.path; ARC.dirty = true; status.textContent = ''; draw(); } else status.textContent = r.error;
+      if (r.ok) { obj[key] = r.path; if (owner) dirtyCards.add(owner); status.textContent = ''; draw(); } else status.textContent = r.error;
       input.value = '';
     });
     draw();
@@ -126,13 +136,14 @@
   }
 
   async function saveSection(section, data) {
+    const owner = activeCard;
     let r;
     try { r = await api('content.save', { method: 'POST', json: { section, data, baseRevision: ARC.state.revision } }); }
     catch (e) { r = { ok: false, status: 0, error: 'Could not reach the server. Check your connection and try again.' }; }
     if (r.ok) {
       ARC.state.revision = r.revision;
       ARC.state.content[section] = r.data;
-      ARC.dirty = false;
+      dirtyCards.delete(owner);
       toast('Saved. Your changes are live on the website.');
     } else if (r.status === 409) {
       toast(r.error, 'error');
