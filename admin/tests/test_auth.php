@@ -88,3 +88,7 @@ t('user_by: empty value never matches a record that lacks the field', function (
     eq(user_by('email', ''), null);
     eq(auth_login('', 'whatever-password', '1.1.1.1', 1000)['ok'], false);
 });
+t('dummy hash: real bcrypt at the same cost as new hashes, never verifies', function () {
+    eq(password_get_info(DUMMY_HASH)['options']['cost'], password_get_info(password_hash('x', PASSWORD_DEFAULT))['options']['cost']);
+    ok(!password_verify('anything', DUMMY_HASH));
+});

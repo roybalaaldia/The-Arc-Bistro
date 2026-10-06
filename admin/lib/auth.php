@@ -40,11 +40,8 @@ function user_create(string $username, string $email, string $password, string $
     return $u;
 }
 
-function dummy_hash(): string
-{
-    static $h = null;
-    return $h ??= password_hash('not-a-real-password', PASSWORD_DEFAULT);
-}
+// Precomputed so unknown usernames cost the same as real ones (no per-request hashing).
+const DUMMY_HASH = '$2y$10$VmqVq25y1uQtLDyIOOCUkOf.ghh3PFyG6OAkcYKZtqB/o3hQCRnvO';
 
 function attempts_key(string $ip, string $username): string { return hash('sha256', $ip . '|' . strtolower(trim($username))); }
 
@@ -83,7 +80,7 @@ function auth_login(string $username, string $password, string $ip, ?int $now = 
         return ['ok' => false, 'error' => 'Too many attempts. Try again in ' . max(1, (int)ceil($wait / 60)) . ' minute(s).', 'user' => null];
     }
     $u = user_by('username', strtolower(trim($username)));
-    $good = password_verify($password, $u['hash'] ?? dummy_hash()) && $u !== null;
+    $good = password_verify($password, $u['hash'] ?? DUMMY_HASH) && $u !== null;
     if (!$good) {
         attempt_fail($key, $now);
         log_line('activity', 'failed login ' . substr(hash('sha256', strtolower($username)), 0, 8));
