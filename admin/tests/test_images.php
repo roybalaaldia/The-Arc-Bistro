@@ -96,3 +96,31 @@ t('handle_upload returns the path on success and 422 on a bad file', function ()
     [$st, $b] = handle_upload($u, ['tmp' => $f, 'err' => UPLOAD_ERR_OK]);
     eq($st, 422); eq($b['ok'], false);
 });
+t('images_memory_limit_bytes parses ini values', function () {
+    foreach (['128M' => 134217728, '1G' => 1073741824, '512k' => 524288, '256m' => 268435456, '-1' => PHP_INT_MAX, '256' => 256] as $in => $want) {
+        eq(images_memory_limit_bytes((string)$in), $want);
+    }
+    ok(images_memory_limit_bytes() > 0);
+});
+t('a huge-but-small-file jpeg is refused under a low memory limit; a small one still works', function () {
+    fresh_env();
+    $big = make_jpeg(5000, 4000);
+    $small = make_jpeg(400, 300);
+    $old = ini_get('memory_limit');
+    try {
+        ini_set('memory_limit', '64M');
+        $e = throws(fn() => images_process($big), InvalidArgumentException::class);
+        ok(str_contains($e->getMessage(), 'too large to process'), $e->getMessage());
+        eq(count(glob(arc_cfg('uploads') . '/*') ?: []), 0);
+        ok(str_ends_with(images_process($small), '.jpg'));
+    } finally { ini_set('memory_limit', $old); }
+});
+t('php appended to a valid jpeg does not survive re-encoding', function () {
+    fresh_env();
+    $f = make_jpeg(100, 100);
+    file_put_contents($f, '<?php echo "pwned";', FILE_APPEND);
+    $path = images_process($f);
+    $out = arc_cfg('root') . '/' . $path;
+    ok(!str_contains((string)file_get_contents($out), '<?php'));
+    ok(getimagesize($out) !== false);
+});

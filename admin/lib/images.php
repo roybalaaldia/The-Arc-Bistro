@@ -5,6 +5,14 @@ const IMG_MAX_BYTES = 5 * 1024 * 1024;
 const IMG_MAX_EDGE = 1600;
 const IMG_MAX_PIXELS = 40000000;
 
+function images_memory_limit_bytes(?string $ini = null): int
+{
+    $v = trim($ini ?? (string)ini_get('memory_limit'));
+    if ($v === '-1') return PHP_INT_MAX;
+    $n = (int)$v;
+    return match (strtolower(substr($v, -1))) { 'g' => $n * 1073741824, 'm' => $n * 1048576, 'k' => $n * 1024, default => $n };
+}
+
 function images_process(string $tmpPath): string
 {
     if ($tmpPath === '' || !is_file($tmpPath)) throw new InvalidArgumentException('No photo was received');
@@ -15,6 +23,11 @@ function images_process(string $tmpPath): string
     if ($info === false) throw new InvalidArgumentException('Please upload a JPG, PNG or WebP photo.');
     if ($info[0] * $info[1] > IMG_MAX_PIXELS) throw new InvalidArgumentException('That photo has too many pixels. Please resize it first.');
     if ($ext === 'webp' && !function_exists('imagewebp')) throw new InvalidArgumentException('WebP photos are not supported on this server. Please use JPG or PNG.');
+
+    // GD truecolor = 4 bytes/pixel; allow for source + rotated/scaled copies. A memory fatal is uncatchable, so refuse first.
+    if ($info[0] * $info[1] * 4 * 3 + memory_get_usage() > images_memory_limit_bytes()) {
+        throw new InvalidArgumentException('That photo is too large to process. Please choose a smaller photo (about 12 megapixels or less works everywhere).');
+    }
 
     $src = @imagecreatefromstring((string)file_get_contents($tmpPath));
     if ($src === false) throw new InvalidArgumentException('That photo could not be read.');

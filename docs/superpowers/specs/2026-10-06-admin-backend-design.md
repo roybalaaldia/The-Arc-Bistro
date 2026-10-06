@@ -121,7 +121,7 @@ Sidebar: **Menu**, **Promos**, **Hours & Contact**, **Accounts** (Owner, Develop
 
 ## 8. Images
 
-Accepted: JPG, PNG, WebP, up to 5 MB. Server verifies real type (not just extension), re-encodes with GD (strips metadata), resizes to a maximum of 1600 px on the long edge, writes random filenames to `uploads/`, and deletes replaced or removed files. Alt text field per image. Admin shows a hint that portrait photos work best (frames crop to their shape).
+Accepted: JPG, PNG, WebP, up to 5 MB. Server verifies real type (not just extension), re-encodes with GD (strips metadata), resizes to a maximum of 1600 px on the long edge, writes random filenames to `uploads/`, and keeps replaced or removed photos until a Developer deletes them in System > Unused photos, because saved versions may still use them. Alt text field per image. Admin shows a hint that portrait photos work best (frames crop to their shape).
 
 ## 9. Error handling
 
