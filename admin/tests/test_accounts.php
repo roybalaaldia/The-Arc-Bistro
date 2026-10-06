@@ -155,3 +155,26 @@ t('system.logs: only activity and error are readable; the mail log (reset links)
     [, $b] = handle_system_logs($p['dev'], ['kind' => 'error']);
     eq($b['lines'], []);
 });
+t('account.password: guesses are throttled, logged, cleared on success, per user', function () {
+    $p = people();
+    $now = 1000000;
+    for ($i = 0; $i < 5; $i++) {
+        [$st] = handle_account_password($p['staff'], ['current' => "wrongguess$i", 'new' => 'brandnewpass1'], $now);
+        eq($st, 422);
+    }
+    [$st, $b] = handle_account_password($p['staff'], ['current' => 'longenough1', 'new' => 'brandnewpass1'], $now + 5);
+    eq($st, 429); ok(str_contains($b['error'], 'Too many attempts'));
+    ok(auth_login('helper', 'longenough1', '1.1.1.1', 5000)['ok'], 'password unchanged while locked');
+    [$st] = handle_account_password($p['owner'], ['current' => 'longenough1', 'new' => 'ownernewpass1'], $now + 5);
+    eq($st, 200, 'other user unaffected');
+    [$st] = handle_account_password($p['staff'], ['current' => 'longenough1', 'new' => 'brandnewpass1'], $now + 601);
+    eq($st, 200, 'works after the lock expires');
+    for ($i = 0; $i < 4; $i++) handle_account_password($p['staff'], ['current' => 'nope', 'new' => 'x'], $now + 700);
+    handle_account_password($p['staff'], ['current' => 'brandnewpass1', 'new' => 'anotherpass12'], $now + 700);
+    for ($i = 0; $i < 4; $i++) handle_account_password($p['staff'], ['current' => 'nope', 'new' => 'x'], $now + 700);
+    [$st] = handle_account_password($p['staff'], ['current' => 'anotherpass12', 'new' => 'thirdpassword1'], $now + 700);
+    eq($st, 200, 'success cleared the counter');
+    $log = (string)file_get_contents(arc_cfg('data') . '/log/activity.log');
+    ok(str_contains($log, 'helper failed a password change check'));
+    ok(!str_contains($log, 'wrongguess') && !str_contains($log, 'longenough1') && !str_contains($log, 'brandnewpass1'));
+});

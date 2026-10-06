@@ -2,7 +2,7 @@
   const { h, btn, card, toast, api } = ARC;
   ARC.tabs.history = {
     async render(root) {
-      root.append(card('History', 'Every save is kept. Restoring a version puts that content back on the website and keeps the current one in the list, so you can undo a restore too.', h('p', { class: 'muted' }, 'Loading…')));
+      root.append(card('History', 'Every save is kept. Restoring a version puts that content back on the website and keeps the current one in the list, so you can undo a restore too.', h('p', { class: 'muted' }, 'Loadingâ€¦')));
       const r = await api('history.list');
       root.replaceChildren();
       if (!r.ok) { root.append(card('History', '', h('p', { class: 'error' }, r.error))); return; }

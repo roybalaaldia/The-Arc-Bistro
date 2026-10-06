@@ -102,10 +102,19 @@ function handle_accounts_send_reset(array $user, array $in): array
     return api_ok(['message' => 'If the email is set up correctly, a reset link is on its way to ' . $t['email'] . '.']);
 }
 
-function handle_account_password(array $user, array $in): array
+function handle_account_password(array $user, array $in, ?int $now = null): array
 {
+    $now ??= time();
+    $key = attempts_key('pw', $user['id']);
+    $wait = lock_remaining($key, $now);
+    if ($wait > 0) return api_err('Too many attempts. Try again in ' . max(1, (int)ceil($wait / 60)) . ' minute(s).', 429);
     $cur = user_by('id', $user['id']);
-    if (!$cur || !password_verify((string)($in['current'] ?? ''), $cur['hash'])) return api_err('Your current password is not correct.', 422);
+    if (!$cur || !password_verify((string)($in['current'] ?? ''), $cur['hash'])) {
+        attempt_fail($key, $now);
+        log_line('activity', "{$user['username']} failed a password change check");
+        return api_err('Your current password is not correct.', 422);
+    }
+    attempt_clear($key);
     $new = (string)($in['new'] ?? '');
     if (strlen($new) < PASSWORD_MIN) return api_err('The new password must be at least ' . PASSWORD_MIN . ' characters.', 422);
     $users = users_all();

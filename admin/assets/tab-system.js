@@ -23,7 +23,7 @@
   }
 
   async function logsCard() {
-    const pre = h('pre', { class: 'log' }, 'Loading…');
+    const pre = h('pre', { class: 'log' }, 'Loadingâ€¦');
     let kind = 'activity';
     async function load() {
       const r = await api('system.logs&kind=' + kind);
