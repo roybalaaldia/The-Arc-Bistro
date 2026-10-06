@@ -20,6 +20,7 @@ try {
     $routes = [
         'content.get'  => ['GET',  'handle_content_get'],
         'content.save' => ['POST', 'handle_content_save'],
+        'upload'       => ['POST', 'handle_upload'],
     ];
     $action = (string)($_GET['action'] ?? '');
     if (!isset($routes[$action])) respond(404, ['ok' => false, 'error' => 'Unknown action']);

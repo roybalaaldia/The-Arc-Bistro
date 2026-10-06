@@ -35,3 +35,15 @@ function handle_content_save(array $user, array $in): array
     }
     return api_ok(['revision' => $rev, 'data' => $clean]);
 }
+
+function handle_upload(array $user, array $in): array
+{
+    if ((int)($in['err'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) return api_err('The upload did not finish. Please try again.', 400);
+    try {
+        $path = images_process((string)($in['tmp'] ?? ''));
+    } catch (InvalidArgumentException $e) {
+        return api_err($e->getMessage(), 422);
+    }
+    log_line('activity', "{$user['username']} uploaded $path");
+    return api_ok(['path' => $path]);
+}
