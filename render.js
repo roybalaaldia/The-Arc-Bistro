@@ -20,7 +20,9 @@
       if (val != null && val !== '') n.textContent = val;
     });
     $$('[data-href]').forEach(n => {
-      n.setAttribute('href', n.getAttribute('data-href').replace(/\{([\w.]+)\}/g, (_, p) => get(v, p) || ''));
+      let ok = true;
+      const href = n.getAttribute('data-href').replace(/\{([\w.]+)\}/g, (_, p) => { const x = get(v, p); if (x == null || x === '') ok = false; return x; });
+      if (ok) n.setAttribute('href', href);
     });
     $$('[data-lines]').forEach(n => {
       const val = get(v, n.getAttribute('data-lines'));
