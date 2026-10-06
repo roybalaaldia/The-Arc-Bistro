@@ -16,7 +16,7 @@ function store_write(array $content, string $who): int
     $bdir = arc_cfg('data') . '/backups';
     if (!is_dir($bdir)) mkdir($bdir, 0775, true);
     $prev = is_file($file) ? json_read($file, []) : [];
-    if (is_file($file)) copy($file, $bdir . '/content-' . date('Ymd-His') . '-' . bin2hex(random_bytes(2)) . '.json');
+    if (is_file($file)) copy($file, $bdir . '/content-' . date('Ymd-His') . '-' . sprintf('%04x', (int)($prev['revision'] ?? 0) % 65536) . '.json');
     $content['version'] = 1;
     $content['revision'] = (int)($prev['revision'] ?? 0) + 1;
     $content['updatedAt'] = date('c');

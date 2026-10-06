@@ -139,3 +139,21 @@ t('lone CR counts as a line break', function () {
     [, $e] = validate_section('contact', ['address' => "a\rb\rc\rd\re"] + GOOD_CONTACT);
     ok(count($e) === 1 && str_contains($e[0], 'at most 3 lines'), json_encode($e));
 });
+t('store: backups sort newest-first even within one second', function () {
+    $d = fresh_env();
+    for ($i = 0; $i < 3; $i++) store_update(fn($c) => $c, $i, 'a');
+    $names = array_column(store_versions(), 'name');
+    eq(count($names), 3);
+    $sorted = $names; rsort($sorted); eq($names, $sorted);
+    ok(count(array_unique($names)) === 3, 'names must be distinct');
+    $revs = array_map(fn($n) => (int)(json_read($d . '/data/backups/' . $n)['revision'] ?? 0), $names);
+    eq($revs, [2, 1, 0]);
+});
+t('store: pruning keeps the 30 newest backups', function () {
+    $d = fresh_env();
+    for ($i = 0; $i < 32; $i++) store_update(fn($c) => $c, $i, 'a');
+    $names = array_column(store_versions(), 'name');
+    eq(count($names), 30);
+    $revs = array_map(fn($n) => (int)(json_read($d . '/data/backups/' . $n)['revision'] ?? 0), $names);
+    eq($revs[0], 31); eq($revs[29], 2);
+});
