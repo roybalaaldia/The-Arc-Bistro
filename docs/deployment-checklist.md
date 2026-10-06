@@ -10,6 +10,8 @@
   - The System tab reads only the activity and error logs.
   - Static copy that mentions days or the street name is not editable from the admin.
   - Real SMTP delivery and the `uploads/.htaccess` directives (`Options`, `RemoveHandler`) were never exercised against Hostinger/LiteSpeed. Verify them in step 4. If `uploads/.htaccess` causes a 500, remove the `Options` and `RemoveHandler` lines and keep the `FilesMatch ... Require all denied` block.
+  - If a CDN or proxy (e.g. Cloudflare) is added later, the `%{HTTPS}` redirect may loop and must be re-checked.
+- File permissions: `admin/data/` and `uploads/` must be writable by the PHP user (755 or 775); everything else can be read-only.
 - If the admin looks unstyled or buttons do nothing, check the browser console for a Content-Security-Policy violation first. The admin uses no inline scripts or styles, so it should not trigger.
 
 ## Step 1: Deploy
@@ -17,7 +19,7 @@
 1. In hPanel, confirm PHP 8.1 or newer, and in "PHP Configuration" that `gd`, `mbstring`, `fileinfo`, `openssl`, `exif` are enabled. Set `display_errors` to Off.
 2. Upload the project to `public_html` (skip the items listed above).
 3. Make sure `admin/data/` and `uploads/` are writable by PHP (permissions 755 or 775, owned by the account).
-4. Create `admin/data/setup.key` on the server with a secret word, open `https://yourdomain/admin/`, create the developer and owner accounts. The key file deletes itself.
+4. Create `admin/data/setup.key` on the server (any secret word) BEFORE the first visit to `/admin/setup.php`. Open `https://yourdomain/admin/`, type the secret word into the setup form and create the developer and owner accounts. The key file deletes itself: after setup, verify it is gone.
 5. Log in as developer, open System, fill in Email settings (Hostinger mailbox) and the website address, press Save.
 6. Click "Forgot your password?" on the login page with the owner's email: the email arrives and the link works.
 
@@ -33,7 +35,9 @@ curl -I https://yourdomain/admin/tests/check.php        -> 403 or 404
 curl -I https://yourdomain/docs/                        -> 403 or 404
 curl -I http://yourdomain/                               -> 301 to https
 curl -I https://yourdomain/content.json                 -> 200 and Cache-Control: no-cache
-curl -I https://yourdomain/admin/setup.php               -> 302 to index.php (setup is locked)
+curl -I https://yourdomain/admin/setup.php               -> 302 to index.php (only valid AFTER setup has completed; before setup it answers 200)
+curl -I http://yourdomain/admin/                         -> 301 to https
+curl -I http://yourdomain/admin/index.php                -> 301 to https
 ```
 
 Also upload a photo through the admin, copy its address (`https://yourdomain/uploads/<name>.jpg`), and confirm it loads. Then create a file `uploads/test.php` containing `<?php echo 1;` by FTP and open it in the browser: it must be refused (403); delete it afterwards.

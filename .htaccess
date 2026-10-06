@@ -5,7 +5,7 @@ RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Never serve dotfiles/dot-folders (.git, .env, .tools, .superpowers), except .well-known
-RewriteRule (^|/)\.(?!well-known) - [F,L]
+RewriteRule (^|/)\.(?!well-known(/|$)) - [F,L]
 
 # Keep tooling, tests and project docs private
 RewriteRule ^(docs|tools|tests|node_modules)(/|$) - [F,L]

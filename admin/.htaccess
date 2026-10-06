@@ -1,5 +1,6 @@
 Options -Indexes
 RewriteEngine On
+RewriteOptions Inherit
 RewriteRule ^(lib|tests)(/|$) - [F,L]
 
 <IfModule mod_headers.c>
